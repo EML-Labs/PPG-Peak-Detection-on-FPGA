@@ -11,6 +11,9 @@ PERIOD:float = 0.3 # second
 window_size_for_integration = int(SAMPLING_FREQUENCY * PERIOD)
 samples_for_validation = int(SAMPLING_FREQUENCY * 0.5)  # 2 seconds
 
+print(f"Window size for integration: {window_size_for_integration}")
+print(f"Samples for validation: {samples_for_validation}")
+
 def get_ppg_data(file_path:str):
     HEADER = ["Time", "PPG", "ECG", "Resp"]
     data = []
