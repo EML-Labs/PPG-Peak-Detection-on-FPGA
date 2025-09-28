@@ -17,17 +17,19 @@ architecture Behavioral of tb_type_4_bandpass_filter is
     signal clk    : std_logic := '0';
     signal rst    : std_logic := '0';
     signal x_in   : signed(15 downto 0) := (others => '0');
-    signal y_out  : signed(31 downto 0);
+    signal y_out  : signed(15 downto 0);
+    signal acc_out : signed(55 downto 0);
+    signal a1_mult_result : signed(47 downto 0);
     -- For observing internal states (optional)
     signal x_0 : signed(15 downto 0);
     signal x_1 : signed(15 downto 0);
     signal x_2 : signed(15 downto 0);
     signal x_3 : signed(15 downto 0);
     signal x_4 : signed(15 downto 0);
-    signal y_1 : signed(31 downto 0);
-    signal y_2 : signed(31 downto 0);
-    signal y_3 : signed(31 downto 0);
-    signal y_4 : signed(31 downto 0);
+    signal y_1 : signed(15 downto 0);
+    signal y_2 : signed(15 downto 0);
+    signal y_3 : signed(15 downto 0);
+    signal y_4 : signed(15 downto 0);
 
     -- Clock period
     constant clk_period : time := 10 ns;
@@ -49,7 +51,9 @@ begin
             y_1    => y_1,  
             y_2    => y_2,
             y_3    => y_3,
-            y_4    => y_4
+            y_4    => y_4, 
+            acc_out => acc_out,
+            a1_mult_result => a1_mult_result
         );
 
     -- Clock generation
@@ -78,7 +82,7 @@ begin
         wait for clk_period;
         x_in <= to_signed(0, 16);
         wait for clk_period;
-        x_in <= to_signed(1, 16);
+        x_in <= to_signed(32767, 16);
         wait for clk_period;
         x_in <= to_signed(0, 16);
         wait for clk_period;
@@ -110,6 +114,7 @@ begin
 
     -- Output logging
     write_proc: process(clk)
+        variable float_val : real;
         variable L : line;
     begin
         if rising_edge(clk) then
@@ -117,6 +122,16 @@ begin
             write(L, integer(to_integer(x_in)));
             write(L, string'("; y_out = "));
             write(L, integer(to_integer(y_out)));
+            -- -- Convert to normalized real values
+            -- float_val := real(to_integer(x_in)) / 32768.0;  -- Q1.15 -> [-1.0, +1.0)
+            -- write(L, string'("; x_in (float) = "));
+            -- write(L, float_val);
+            write(L, string'("; acc = "));
+            write(L, integer(to_integer(acc_out(55 downto 24))));
+            float_val := real(to_integer(y_out)) / 32768.0; -- Q1.15 -> [-1.0, +1.0)
+            write(L, string'("; y_out (float) = "));
+            write(L, float_val);
+        
             writeline(outfile, L);
         end if;
     end process;

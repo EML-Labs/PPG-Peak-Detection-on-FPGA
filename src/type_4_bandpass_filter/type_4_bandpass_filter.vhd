@@ -5,7 +5,7 @@ use IEEE.NUMERIC_STD.ALL;
 -- Package for array types
 package filter_types is
     type x_array_type is array(0 to 4) of signed(15 downto 0);
-    type y_array_type is array(1 to 4) of signed(31 downto 0);
+    type y_array_type is array(1 to 4) of signed(15 downto 0);
 end package;
 
 library IEEE;
@@ -14,92 +14,119 @@ use IEEE.NUMERIC_STD.ALL;
 use work.filter_types.all;
 
 entity type_4_bandpass_filter is
-        -- Array type definitions for delay registers
+    Port (
+        clk   : in  STD_LOGIC;
+        rst   : in  STD_LOGIC;
+        x_in  : in  signed(15 downto 0);     -- Q1.15 input
+        y_out : out signed(15 downto 0);     -- Q1.15 output (extended to 32 bits)
 
-    Port ( clk       : in  STD_LOGIC;
-           rst       : in  STD_LOGIC;
-           x_in      : in  signed(15 downto 0);   -- input sample
-           y_out     : out signed(31 downto 0);    -- output sample
-           x_0     : out signed(15 downto 0);    -- debug
-           x_1     : out signed(15 downto 0);    -- debug
-           x_2     : out signed(15 downto 0);    -- debug
-           x_3     : out signed(15 downto 0);    -- debug
-           x_4     : out signed(15 downto 0);    -- debug
-           y_1     : out signed(31 downto 0);    -- debug
-           y_2     : out signed(31 downto 0);    -- debug
-           y_3     : out signed(31 downto 0);    -- debug
-           y_4     : out signed(31 downto 0)     -- debug
-           );
+        -- Debug ports
+        acc_out                 : out signed(55 downto 0);
+        x_0, x_1, x_2, x_3, x_4 : out signed(15 downto 0);
+        y_1, y_2, y_3, y_4      : out signed(15 downto 0);
+        a1_mult_result          : out signed(47 downto 0)
+    );
 end type_4_bandpass_filter;
 
-architecture Behavioral of type_4_bandpass_filter
- is
+architecture Behavioral of type_4_bandpass_filter is
+
     -- Coefficients in Q1.15 fixed-point
-    constant b0 : signed(15 downto 0) := to_signed(19094, 16);
-    constant b1 : signed(15 downto 0) := to_signed(0, 16);
-    constant b2 : signed(15 downto 0) := to_signed(-38187, 16);
-    constant b3 : signed(15 downto 0) := to_signed(0, 16);
-    constant b4 : signed(15 downto 0) := to_signed(19094, 16);
+    constant b0 : signed(31 downto 0) := to_signed(625451352, 32);
+    constant b1 : signed(31 downto 0) := to_signed(0, 32);
+    constant b2 : signed(31 downto 0) := to_signed(-1251168932, 32);
+    constant b3 : signed(31 downto 0) := to_signed(0, 32);
+    constant b4 : signed(31 downto 0) := to_signed(625451352, 32);
 
-    constant a1 : signed(15 downto 0) := to_signed(-22507, 16);
-    constant a2 : signed(15 downto 0) := to_signed(-26735, 16);
-    constant a3 : signed(15 downto 0) := to_signed(6359, 16);
-    constant a4 : signed(15 downto 0) := to_signed(11377, 16);
-
+    constant a1 : signed(31 downto 0) := to_signed(-737915354, 32);
+    constant a2 : signed(31 downto 0) := to_signed(-875560496, 32);
+    constant a3 : signed(31 downto 0) := to_signed(208097889, 32);
+    constant a4 : signed(31 downto 0) := to_signed(373198311, 32);
 
     -- Delay registers
     signal x_reg : x_array_type;
     signal y_reg : y_array_type;
-    signal y_out_int : signed(31 downto 0); -- internal output signal
+
+    signal y_out_int : signed(15 downto 0);
+    signal acc_out_int : signed(55 downto 0);
+    signal a1_mult_result_int : signed(47 downto 0);
 
 begin
+
     process(clk, rst)
-        variable acc    : signed(31 downto 0);
-        variable y_tmp  : y_array_type; -- temporary storage
+        variable acc  : signed(55 downto 0);  -- wide accumulator
+        variable mult : signed(47 downto 0);  -- 16x32 multiplication
     begin
         if rst = '1' then
-            x_reg     <= (others => (others => '0'));
-            y_reg     <= (others => (others => '0'));
-            y_out_int <= (others => '0');
-
+            x_reg       <= (others => (others => '0'));
+            y_reg       <= (others => (others => '0'));
+            y_out_int   <= (others => '0');
+            acc_out_int <= (others => '0');
+            a1_mult_result_int <= (others => '0');
+            
         elsif rising_edge(clk) then
-            -- compute output using OLD y_reg
-            acc := resize(b0 * x_in, 32) +
-                resize(b1 * x_reg(0), 32) +
-                resize(b2 * x_reg(1), 32) +
-                resize(b3 * x_reg(2), 32) +
-                resize(b4 * x_reg(3), 32);
+            -- Reset accumulator
+            acc := (others => '0');
 
-            acc := acc -
-                resize(a1 * y_reg(1)(31 downto 16), 32) -
-                resize(a2 * y_reg(2)(31 downto 16), 32) -
-                resize(a3 * y_reg(3)(31 downto 16), 32) -
-                resize(a4 * y_reg(4)(31 downto 16), 32);
+            -- Feedforward (b coefficients * inputs)
+            mult := b0 * x_in;
+            acc := acc + resize(mult, 56);
+            
+            mult := b1 * x_reg(0);
+            acc := acc + resize(mult, 56);
 
-            y_out_int <= acc;
+            mult := b2 * x_reg(1);
+            acc := acc + resize(mult, 56);
 
-            -- shift input history
+            mult := b3 * x_reg(2);
+            acc := acc + resize(mult, 56);
+
+            mult := b4 * x_reg(3);
+            acc := acc + resize(mult, 56);
+
+            -- Feedback (a coefficients * outputs)
+            mult := a1 * y_reg(1);
+            a1_mult_result_int <= mult;
+            acc := acc - resize(mult, 56);
+
+            mult := a2 * y_reg(2);
+            acc := acc - resize(mult, 56);
+
+            mult := a3 * y_reg(3);
+            acc := acc - resize(mult, 56);
+
+            mult := a4 * y_reg(4);
+            acc := acc - resize(mult, 56);
+
+            acc_out_int <= acc;
+
+            -- Normalize back to Q1.15 (shift right by 30)
+            y_out_int <= resize(shift_right(acc, 30), 16);
+
+            -- Update delay lines
             x_reg(1 to 4) <= x_reg(0 to 3);
             x_reg(0)      <= x_in;
 
-            -- shift output history (via temporary)
-            y_tmp := y_reg;   -- save old
-            y_reg(2 to 4) <= y_tmp(1 to 3);
-            y_reg(1)      <= acc;
+            y_reg(2 to 4) <= y_reg(1 to 3);
+            y_reg(1)      <= resize(shift_right(acc, 30), 16);
         end if;
     end process;
 
-
-
-    -- Assign internal output to port
-    x_0 <= x_reg(0); -- debug outputs
+    -- Debug assignments
+    x_0 <= x_reg(0);
     x_1 <= x_reg(1);
     x_2 <= x_reg(2);
     x_3 <= x_reg(3);
     x_4 <= x_reg(4);
+
     y_1 <= y_reg(1);
     y_2 <= y_reg(2);
     y_3 <= y_reg(3);
     y_4 <= y_reg(4);
+
     y_out <= y_out_int;
+
+    acc_out <= acc_out_int;
+
+    a1_mult_result <= a1_mult_result_int;
+
 end Behavioral;
