@@ -20,13 +20,7 @@ entity type_4_bandpass_filter is
         valid_in  : in  STD_LOGIC;
         x_in      : in  signed(15 downto 0);     -- Q1.15 input
         valid_out : out STD_LOGIC;
-        y_out     : out signed(15 downto 0);     -- Q1.15 output (extended to 32 bits)
-
-        -- Debug ports
-        acc_out                 : out signed(55 downto 0);
-        x_0, x_1, x_2, x_3, x_4 : out signed(15 downto 0);
-        y_1, y_2, y_3, y_4      : out signed(15 downto 0);
-        a1_mult_result          : out signed(47 downto 0)
+        y_out     : out signed(15 downto 0)     -- Q1.15 output (extended to 32 bits)
     );
 end type_4_bandpass_filter;
 
@@ -120,22 +114,6 @@ begin
         end if;
     end process;
 
-    -- Debug assignments
-    x_0 <= x_reg(0);
-    x_1 <= x_reg(1);
-    x_2 <= x_reg(2);
-    x_3 <= x_reg(3);
-    x_4 <= x_reg(4);
-
-    y_1 <= y_reg(1);
-    y_2 <= y_reg(2);
-    y_3 <= y_reg(3);
-    y_4 <= y_reg(4);
-
     y_out <= y_out_int;
-
-    acc_out <= acc_out_int;
-
-    a1_mult_result <= a1_mult_result_int;
 
 end Behavioral;

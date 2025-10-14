@@ -5,6 +5,7 @@ use IEEE.NUMERIC_STD.ALL;
 entity preprocessing_pipeline is
     Port ( clk        : in  STD_LOGIC;
            rst        : in  STD_LOGIC;
+           valid_in   : in  STD_LOGIC;
            x_in       : in  signed(15 downto 0);
            y_out      : out signed(15 downto 0);
            valid_out  : out STD_LOGIC
