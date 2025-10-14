@@ -57,7 +57,7 @@ for i in range(min_len):
 plt.plot(vhdl_x_trimmed[:len(differences)], differences, 'k:', label='VHDL - Python', linewidth=1)
 
 # Add title and labels
-plt.title('Comparison of VHDL and Python Moving Average Implementations (First 100 Values)', fontsize=16)
+plt.title('Moving Average', fontsize=16)
 plt.xlabel('Input Value', fontsize=14)
 plt.ylabel('Moving Average Output', fontsize=14)
 

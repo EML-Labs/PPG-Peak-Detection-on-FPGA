@@ -3,6 +3,15 @@ from scipy.signal import lfilter
 import matplotlib.pyplot as plt
 import os
 
+# Function to calculate Mean Squared Error (MSE)
+def calculate_mse(actual, predicted):
+    """Calculate Mean Squared Error between two signals"""
+    if len(actual) != len(predicted):
+        raise ValueError("Both signals must have the same length")
+    
+    mse = np.mean((actual - predicted) ** 2)
+    return mse
+
 # Path to the VHDL output file
 vhdl_output_file = "../src/type_4_bandpass_filter/filter_output.txt"
 
@@ -102,15 +111,19 @@ plt.ylabel('Amplitude')
 plt.grid(True)
 plt.legend()
 
-# Plot difference
+# Plot difference and MSE
 plt.subplot(3, 1, 3)
 difference = vhdl_y_float - python_y
 plt.stem(sample_indices, difference, 'k', markerfmt='ko', label='Difference')
-plt.title('Difference (VHDL - Python)')
+plt.title(f'Difference (VHDL - Python), MSE: {calculate_mse(vhdl_y_float, python_y):.6f}')
 plt.xlabel('Sample')
 plt.ylabel('Amplitude Difference')
 plt.grid(True)
 plt.legend()
+
+# Add a horizontal line at the MSE value
+plt.axhline(y=np.sqrt(calculate_mse(vhdl_y_float, python_y)), color='r', linestyle='--', 
+           label=f'RMSE: {np.sqrt(calculate_mse(vhdl_y_float, python_y)):.6f}')
 
 # Add a separate zoomed-in plot to show the close alignment
 plt.figure(figsize=(12, 6))
@@ -124,15 +137,16 @@ plt.legend()
 plt.tight_layout()
 plt.savefig("filter_zoom.png", dpi=300)
 
-# Add a super title
-plt.suptitle('VHDL vs Python Filter Implementation Comparison', fontsize=16)
+# Add MSE to super title
+mse_value = calculate_mse(vhdl_y_float, python_y)
+plt.suptitle(f'Fourth Order Butterworth Bandpass Filter Response Comparison\nMSE: {mse_value:.6f}', fontsize=16)
 plt.tight_layout(rect=[0, 0, 1, 0.95])
 
 # Create a plot comparing only VHDL vs shifted Python output
 plt.figure(figsize=(15, 8))
 plt.stem(sample_indices, vhdl_y_float, 'r', markerfmt='ro', basefmt=" ", label='VHDL Output')
 plt.stem(sample_indices, python_y, 'g', markerfmt='g^', linefmt='g--', basefmt=" ", label='Python Output (Aligned)')
-plt.title('VHDL vs Python Output')
+plt.title('Fourth Order Butterworth Bandpass Filter Response Comparison')
 plt.xlabel('Sample')
 plt.ylabel('Amplitude')
 plt.grid(True)
@@ -146,8 +160,12 @@ shifted_diff = vhdl_y_float - python_y
 max_shifted_diff = np.max(np.abs(shifted_diff))
 mean_shifted_diff = np.mean(np.abs(shifted_diff))
 rms_diff = np.sqrt(np.mean(np.square(shifted_diff)))
+mse = calculate_mse(vhdl_y_float, python_y)
+rmse = np.sqrt(mse)
 
 print(f"\nComparison metrics (VHDL vs Shifted Python):")
+print(f"Mean Squared Error (MSE): {mse:.10f}")
+print(f"Root Mean Squared Error (RMSE): {rmse:.10f}")
 print(f"Maximum absolute difference: {max_shifted_diff:.10f}")
 print(f"Mean absolute difference: {mean_shifted_diff:.10f}")
 print(f"RMS difference: {rms_diff:.10f}")
@@ -164,9 +182,10 @@ for i in range(min(15, len(vhdl_y_float))):
 
 # Save the complete comparison to a file
 with open('filter_comparison_data.csv', 'w') as f:
-    f.write("Sample,VHDL,Python,Difference\n")
+    f.write("Sample,VHDL,Python,Difference,SquaredError\n")
     for i in range(len(vhdl_y_float)):
-        f.write(f"{i},{vhdl_y_float[i]:.10f},{python_y[i]:.10f},{shifted_diff[i]:.10f}\n")
+        squared_error = (vhdl_y_float[i] - python_y[i])**2
+        f.write(f"{i},{vhdl_y_float[i]:.10f},{python_y[i]:.10f},{shifted_diff[i]:.10f},{squared_error:.10f}\n")
 
 # Print samples with largest differences
 if len(shifted_diff) > 0:
@@ -176,3 +195,34 @@ if len(shifted_diff) > 0:
     print("-" * 55)
     for i in largest_shift_indices:
         print(f"{i:6d} {vhdl_y_float[i]:15.10f} {python_y[i]:15.10f} {shifted_diff[i]:15.10f}")
+
+# Create a dedicated MSE visualization plot
+plt.figure(figsize=(12, 10))
+
+# Plot 1: Squared errors
+plt.subplot(2, 1, 1)
+squared_errors = (vhdl_y_float - python_y)**2
+plt.stem(sample_indices, squared_errors, 'b', markerfmt='bo', label='Squared Error')
+plt.axhline(y=mse, color='r', linestyle='--', label=f'MSE: {mse:.8f}')
+plt.title('Squared Error per Sample')
+plt.xlabel('Sample')
+plt.ylabel('Squared Error')
+plt.yscale('log')  # Log scale to better visualize small errors
+plt.grid(True)
+plt.legend()
+
+# Plot 2: Cumulative MSE
+plt.subplot(2, 1, 2)
+cumulative_mse = np.cumsum(squared_errors) / np.arange(1, len(squared_errors) + 1)
+plt.plot(sample_indices, cumulative_mse, 'g-', label='Cumulative MSE')
+plt.axhline(y=mse, color='r', linestyle='--', label=f'Final MSE: {mse:.8f}')
+plt.title('Cumulative MSE (Running Average of Squared Errors)')
+plt.xlabel('Number of Samples')
+plt.ylabel('MSE Value')
+plt.grid(True)
+plt.legend()
+
+plt.tight_layout()
+plt.savefig("mse_analysis.png", dpi=300)
+plt.suptitle("Mean Squared Error Analysis", fontsize=16)
+plt.subplots_adjust(top=0.92)
