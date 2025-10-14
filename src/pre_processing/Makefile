@@ -1,4 +1,4 @@
-PROJ = preprocessing_pipeline
+PROJ = peak_detection
 TB = tb_$(PROJ)
 CC = ghdl
 VT = gtkwave
@@ -8,6 +8,7 @@ VHDL_FILES = type_4_bandpass_filter.vhd \
              absolute_value.vhd \
 			 moving_average_filter.vhd \
 			 type_1_lowpass_filter.vhd \
+			 peak_detector.vhd \
              $(PROJ).vhd \
              $(TB).vhd
 
@@ -18,6 +19,7 @@ $(TB): $(VHDL_FILES)
 	$(CC) -a absolute_value.vhd
 	$(CC) -a moving_average_filter.vhd
 	$(CC) -a type_1_lowpass_filter.vhd
+	$(CC) -a peak_detector.vhd
 	$(CC) -a $(PROJ).vhd
 	$(CC) -a $(TB).vhd
 	$(CC) -e $(TB)
