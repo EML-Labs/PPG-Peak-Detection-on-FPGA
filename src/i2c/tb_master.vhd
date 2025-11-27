@@ -54,14 +54,8 @@ begin
             sda       => sda,
             scl       => scl
         );
---------------------------------------------------------------------
-            -- Clock generation
---------------------------------------------------------------------
     clk <= not clk after clk_period / 2;
 
---------------------------------------------------------------------
-            -- Dummy i2c Slave
---------------------------------------------------------------------
     sda <= '0' when sda_slave_drive = '0' else 'H';
 
     slave_proc : process(clk)
@@ -72,7 +66,7 @@ begin
 
             scl <= 'H';
 
-            -- Clock stretching (requested by stim via slave_stretch = '1')
+            -- Clock stretching 
             if slave_stretch = '1' and scl = '1' then
                 if stretch_count < 10 then 
                     scl <= '0';
