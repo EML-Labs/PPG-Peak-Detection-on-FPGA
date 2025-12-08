@@ -1,2 +1,77 @@
+# VHDL-specific
 *.o
 *.cf
+*.ghw
+work/
+
+# Python-specific
+__pycache__/
+*.py[cod]
+*$py.class
+*.so
+.Python
+build/
+develop-eggs/
+dist/
+downloads/
+eggs/
+.eggs/
+lib/
+lib64/
+parts/
+sdist/
+var/
+wheels/
+*.egg-info/
+.installed.cfg
+*.egg
+*.csh
+*.fish
+*.cfg
+
+# Pip
+pip-log.txt
+pip-delete-this-directory.txt
+
+
+# Poetry and Python environments
+.venv/
+venv/
+env/
+ENV/
+poetry.lock  
+pyproject.toml  
+# pyproject.toml is NOT ignored - this file should be kept in version control
+
+# Conda environments
+.env
+.envrc
+conda-env/
+.conda/
+anaconda/
+miniconda/
+
+# Jupyter Notebook
+.ipynb_checkpoints
+
+# VS Code
+.vscode/
+
+# macOS specific
+.DS_Store
+.AppleDouble
+.LSOverride
+._*
+
+# Generated files
+filter_output.txt
+*.csv
+*.png
+*.pdf
+filter_comparison_data.txt
+moving_average_results.txt
+peak_detector.vhd 
+fir_filter.vhd
+*.o
+*.cf
+
