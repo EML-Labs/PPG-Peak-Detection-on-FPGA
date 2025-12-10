@@ -64,9 +64,8 @@ miniconda/
 ._*
 
 # Generated files
-filter_output.txt
 *.csv
-*.png
+# *.png
 *.pdf
 filter_comparison_data.txt
 moving_average_results.txt
