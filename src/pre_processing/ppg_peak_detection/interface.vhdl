@@ -7,6 +7,7 @@ entity interface is
     Port(
         clk      : in STD_LOGIC;
         rst      : in STD_LOGIC;
+        init_done : out STD_LOGIC;
         sda      : inout STD_LOGIC;
         scl      : inout STD_LOGIC;
     );
