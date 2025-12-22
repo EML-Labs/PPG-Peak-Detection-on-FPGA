@@ -1,19 +1,9 @@
 PROJ = peak_detector
-TB = tb_$(PROJ)
-CC = ghdl
-VT = gtkwave
 
-VHDL_FILES = $(PROJ).vhd $(TB).vhd
+VHDL_FILES = \
+	peak_detector.vhd \
+	tb_peak_detector.vhd
 
-all: $(TB)
+STOP_TIME = 200ns
 
-$(TB): $(VHDL_FILES)
-	$(CC) -a $(VHDL_FILES) 
-	$(CC) -e $(TB)
-
-run: $(TB)
-	$(CC) -r $(TB) --vcd=$(PROJ).vcd --stop-time=200ns
-	$(VT) --dump=$(PROJ).vcd 
-
-clean:
-	rm -f *.o *.cf $(PROJ).vcd $(TB)
+include ../../../scripts/Makefile.common

@@ -1,19 +1,9 @@
 PROJ = i2c
-TB = tb_$(PROJ)
-CC = ghdl
-VT = gtkwave
 
-VHDL_FILES = $(PROJ).vhd $(TB).vhd
+VHDL_FILES = \
+	i2c.vhd \
+	tb_i2c.vhd
 
-all: $(TB)
+STOP_TIME = 700us
 
-$(TB): $(VHDL_FILES)
-	$(CC) -a $(VHDL_FILES)
-	$(CC) -e $(TB)
-
-run: $(TB)
-	$(CC) -r $(TB) --vcd=$(PROJ).vcd --stop-time=1ms
-	$(VT) --dump=$(PROJ).vcd
-
-clean:
-	rm -f *.o *.cf $(PROJ).vcd $(TB)
+include ../../../scripts/Makefile.common

@@ -1,19 +1,8 @@
 PROJ = type_4_bandpass_filter
-TB = tb_$(PROJ)
-CC = ghdl
-VT = gtkwave
 
-VHDL_FILES = $(PROJ).vhd $(TB).vhd
+VHDL_FILES = \
+	type_4_bandpass_filter.vhd \
+	tb_type_4_bandpass_filter.vhd
+STOP_TIME = 300ns
 
-all: $(TB)
-
-$(TB): $(VHDL_FILES)
-	$(CC) -a $(VHDL_FILES)
-	$(CC) -e $(TB)
-
-run: $(TB)
-	$(CC) -r $(TB) --vcd=$(PROJ).vcd --stop-time=300ns
-	$(VT) --dump=$(PROJ).vcd
-
-clean:
-	rm -f *.o *.cf $(PROJ).vcd $(TB)
+include ../../../scripts/Makefile.common

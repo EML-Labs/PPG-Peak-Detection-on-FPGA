@@ -1,19 +1,8 @@
 PROJ = type_1_lowpass_filter
-TB = tb_$(PROJ)
-CC = ghdl
-VT = gtkwave
 
-VHDL_FILES = $(PROJ).vhd $(TB).vhd
+VHDL_FILES = \
+	type_1_lowpass_filter.vhd \
+	tb_type_1_lowpass_filter.vhd
+STOP_TIME = 600ns
 
-all: $(TB)
-
-$(TB): $(VHDL_FILES)
-	$(CC) -a $(VHDL_FILES)
-	$(CC) -e $(TB)
-
-run: $(TB)
-	$(CC) -r $(TB) --vcd=$(PROJ).vcd --stop-time=600ns
-	$(VT) --dump=$(PROJ).vcd
-
-clean:
-	rm -f *.o *.cf $(PROJ).vcd $(TB)
+include ../../../scripts/Makefile.common
