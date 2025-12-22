@@ -74,3 +74,5 @@ fir_filter.vhd
 *.o
 *.cf
 
+
+Simulation/share/*

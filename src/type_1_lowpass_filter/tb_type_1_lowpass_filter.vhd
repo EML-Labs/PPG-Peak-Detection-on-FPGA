@@ -1,100 +1,59 @@
--- Testbench for type_1_lowpass_filter
 library IEEE;
 use IEEE.STD_LOGIC_1164.ALL;
 use IEEE.NUMERIC_STD.ALL;
-use std.textio.ALL;
 
-entity tb_type_1_lowpass_filter is
-end tb_type_1_lowpass_filter;
+entity low_pass_iir_filter is
+    Port ( clk   : in  STD_LOGIC;
+           rst   : in  STD_LOGIC;
+           x_in  : in  signed(15 downto 0);   -- input sample (Q1.15)
+           y_out : out signed(31 downto 0)    -- output sample (Q1.15 in 32-bit container)
+         );
+end low_pass_iir_filter;
 
-architecture Behavioral of tb_type_1_lowpass_filter is
-    file outfile : text open write_mode is "lowpass_output.txt";
+architecture Behavioral of low_pass_iir_filter is
+    -- Coefficients in Q1.15 format (scaled by 32768)
+    constant b0 : signed(15 downto 0) := to_signed(1937, 16);
+    constant b1 : signed(15 downto 0) := to_signed(1937, 16);
+    constant a1 : signed(15 downto 0) := to_signed(-28888, 16); -- note: already negative
 
-    -- DUT signals
-    signal clk    : std_logic := '0';
-    signal rst    : std_logic := '0';
-    signal x_in   : signed(15 downto 0) := (others => '0');
-    signal y_out  : signed(15 downto 0);
+    -- Input delay line (x[n], x[n-1])
+    type x_array_type is array(1 downto 0) of signed(15 downto 0);
+    signal x_reg : x_array_type := (others => (others => '0'));
 
-    -- Optional debug signals (only if DUT exposes them)
-    -- signal acc_out : signed(55 downto 0);  -- accumulator
-    -- signal x_0, x_1 : signed(15 downto 0);
-    -- signal y_1     : signed(15 downto 0);
+    -- Output delay line (y[n-1]) – only one past value needed
+    signal y_reg : signed(31 downto 0) := (others => '0');
 
-    -- Clock period
-    constant clk_period : time := 10 ns;
-    constant sim_time   : time := 1000 ns;
+    -- Internal output
+    signal y_out_int : signed(31 downto 0) := (others => '0');
 
 begin
-    -- Instantiate the DUT
-    uut: entity work.type_1_lowpass_filter
-        port map (
-            clk    => clk,
-            rst    => rst,
-            x_in   => x_in,
-            y_out  => y_out
-            -- Uncomment and connect these only if available in DUT
-            -- , acc_out => acc_out
-            -- , x_0 => x_0
-            -- , x_1 => x_1
-            -- , y_1 => y_1
-        );
-
-    -- Clock generation
-    clk_process : process
+    process(clk, rst)
+        variable acc : signed(31 downto 0);
     begin
-        while now < sim_time loop
-            clk <= '0';
-            wait for clk_period/2;
-            clk <= '1';
-            wait for clk_period/2;
-        end loop;
-        wait;
-    end process;
+        if rst = '1' then
+            x_reg     <= (others => (others => '0'));
+            y_reg     <= (others => '0');
+            y_out_int <= (others => '0');
 
-    -- Stimulus process
-    stim_proc: process
-    begin
-        -- Apply reset
-        rst <= '1';
-        wait for 2*clk_period;
-        rst <= '0';
-        wait for clk_period;
+        elsif rising_edge(clk) then
+            -- shift input history
+            x_reg(1) <= x_reg(0);
+            x_reg(0) <= x_in;
 
-        -- Impulse input sequence
-        x_in <= to_signed(0, 16);
-        wait for clk_period;
-        x_in <= to_signed(32767, 16); -- impulse
-        wait for clk_period;
-        x_in <= to_signed(0, 16);
+            -- difference equation:
+            -- y[n] = b0*x[n] + b1*x[n-1] + a1*y[n-1]
 
-        -- Keep zeros for the rest of the sim
-        wait for 100*clk_period;
+            acc := resize(b0 * x_reg(0), 32) +
+                   resize(b1 * x_reg(1), 32) +
+                   resize(a1 * resize(y_reg(31 downto 16), 16), 32);
 
-        wait;
-    end process;
+            -- update output history
+            y_reg <= acc;
 
-    -- Output logging
-    write_proc: process(clk)
-        variable L : line;
-        variable float_val : real;
-    begin
-        if rising_edge(clk) then
-            write(L, string'("x_in = "));
-            write(L, integer(to_integer(x_in)));
-            write(L, string'("; y_out = "));
-            write(L, integer(to_integer(y_out)));
-
-            float_val := real(to_integer(y_out)) / 32768.0;
-            write(L, string'("; y_out (float) = "));
-            write(L, float_val);
-
-            -- Uncomment if DUT has acc_out
-            -- write(L, string'("; acc = "));
-            -- write(L, integer(to_integer(acc_out(55 downto 24))));
-
-            writeline(outfile, L);
+            -- output
+            y_out_int <= acc;
         end if;
     end process;
 
+    y_out <= y_out_int;
 end Behavioral;

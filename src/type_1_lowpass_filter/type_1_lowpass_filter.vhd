@@ -1,61 +1,70 @@
+-- Testbench for low_pass_iir_filter
 library IEEE;
 use IEEE.STD_LOGIC_1164.ALL;
 use IEEE.NUMERIC_STD.ALL;
 
-entity type_1_lowpass_filter is
-    Port ( clk   : in  STD_LOGIC;
-           rst   : in  STD_LOGIC;
-           x_in  : in  signed(15 downto 0);   -- input sample (Q1.15)
-           y_out : out signed(15 downto 0)    -- output sample (Q1.15 in 32-bit container)
-         );
-end type_1_lowpass_filter;
+entity tb_low_pass_iir_filter is
+end tb_low_pass_iir_filter;
 
-architecture Behavioral of type_1_lowpass_filter is
-    -- Coefficients in Q1.15 format (scaled by 32768)
-    constant b0 : signed(15 downto 0) := to_signed(1937, 16);
-    constant b1 : signed(15 downto 0) := to_signed(1937, 16);
-    constant a1 : signed(15 downto 0) := to_signed(-28888, 16); -- note: already negative
+architecture Behavioral of tb_low_pass_iir_filter is
+    -- DUT signals
+    signal clk    : std_logic := '0';
+    signal rst    : std_logic := '0';
+    signal x_in   : signed(15 downto 0) := (others => '0');
+    signal y_out  : signed(31 downto 0);
 
-    -- Input delay line (x[n], x[n-1])
-    type x_array_type is array(1 downto 0) of signed(15 downto 0);
-    signal x_reg : signed(15 downto 0) := (others => '0');
-    -- Output delay line (y[n-1]) – only one past value needed
-    signal y_reg : signed(15 downto 0) := (others => '0');
-
-    -- Internal output
-    signal y_out_int : signed(15 downto 0) := (others => '0');
+    -- Clock period
+    constant clk_period : time := 10 ns;
 
 begin
-    process(clk, rst)
-        variable acc : signed(39 downto 0);
-        variable mult : signed(31 downto 0);
+    -- Instantiate the DUT
+    uut: entity work.low_pass_iir_filter
+        port map (
+            clk    => clk,
+            rst    => rst,
+            x_in   => x_in,
+            y_out  => y_out
+        );
+
+    -- Clock generation
+    clk_process : process
     begin
-        if rst = '1' then
-            x_reg     <= (others => '0');
-            y_reg     <= (others => '0');
-            y_out     <= (others => '0');
-
-        elsif rising_edge(clk) then
-            acc := (others => '0');
-            mult := (others => '0');
-
-            -- difference equation:
-            -- y[n] = b0*x[n] + b1*x[n-1] + a1*y[n-1]
-            mult := b0 * x_in;
-            acc := acc + resize(mult, 40);
-
-            mult := b1 * x_reg;
-            acc := acc + resize(mult, 40);
-
-            mult := a1 * y_reg;
-            acc := acc - resize(mult, 40);
-
-            y_out <= resize(shift_right(acc, 15), 16);
-
-            x_reg <= x_in;
-            y_reg <= resize(shift_right(acc, 15), 16);
-
-        end if;
+        while now < 1 ms loop
+            clk <= '0';
+            wait for clk_period/2;
+            clk <= '1';
+            wait for clk_period/2;
+        end loop;
+        wait;
     end process;
 
+    -- Stimulus process
+    stim_proc: process
+    begin
+        -- Apply reset
+        rst <= '1';
+        wait for 2*clk_period;
+        rst <= '0';
+        wait for clk_period;
+
+        -- Followed by zeros
+        x_in <= to_signed(0, 16);
+        wait for clk_period;
+        x_in <= to_signed(0, 16);
+        wait for clk_period;
+        -- Impulse input in Q1.15 format (≈ 1.0 = 32767)
+        x_in <= to_signed(1, 16);
+        wait for clk_period;
+        x_in <= to_signed(0, 16);
+        wait for clk_period;
+        x_in <= to_signed(0, 16);
+        wait for clk_period;
+        x_in <= to_signed(0, 16);
+        wait for clk_period;
+        x_in <= to_signed(0, 16);
+        wait for 20*clk_period;
+
+        -- End simulation
+        wait;
+    end process;
 end Behavioral;
