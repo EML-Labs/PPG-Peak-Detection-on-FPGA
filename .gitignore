@@ -64,9 +64,8 @@ miniconda/
 ._*
 
 # Generated files
-filter_output.txt
 *.csv
-*.png
+# *.png
 *.pdf
 filter_comparison_data.txt
 moving_average_results.txt
@@ -74,4 +73,11 @@ peak_detector.vhd
 fir_filter.vhd
 *.o
 *.cf
+*.vcd
 
+!**/*.vhd
+!**/Makefile
+
+Simulation/share/*
+
+**/build/

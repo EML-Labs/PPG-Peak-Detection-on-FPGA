@@ -1,0 +1,49 @@
+# =========================
+# Common GHDL build rules
+# =========================
+
+# Tools (can be overridden)
+GHDL ?= ghdl
+WAVE ?= gtkwave
+
+STOP_TIME ?= 100us   # default stop time if not overridden
+
+# Directories (can be overridden)
+SRC_DIR   ?= .
+BUILD_DIR ?= build
+WAVE_DIR  ?= $(BUILD_DIR)/waves
+
+# Derived
+TB ?= tb_$(PROJ)
+TB_BINARY := $(BUILD_DIR)/$(TB)
+
+# GHDL flags
+GHDL_FLAGS += --workdir=$(BUILD_DIR)
+
+# Default target
+all: $(TB_BINARY)
+
+# Analyze and elaborate VHDL files into a binary
+$(TB_BINARY): $(VHDL_FILES) $(VHDL_SYNTH_SOURCES)
+	@mkdir -p $(BUILD_DIR)
+	@mkdir -p $(WAVE_DIR)
+
+ifneq ($(VHDL_SYNTH_SOURCES),)
+	$(GHDL) -a $(GHDL_FLAGS) $(VHDL_SYNTH_SOURCES)
+endif
+
+	
+	$(GHDL) -a $(GHDL_FLAGS) $(VHDL_FILES)
+	$(GHDL) -e $(GHDL_FLAGS) -o $@ $(TB)
+
+# Run the simulation
+run: $(TB_BINARY)
+	@mkdir -p $(WAVE_DIR)
+	./$(TB_BINARY) --vcd=$(WAVE_DIR)/$(PROJ).vcd --stop-time=$(STOP_TIME)
+	$(WAVE) $(WAVE_DIR)/$(PROJ).vcd
+
+# Clean build artifacts
+clean:
+	rm -rf $(BUILD_DIR)
+
+.PHONY: all run clean
