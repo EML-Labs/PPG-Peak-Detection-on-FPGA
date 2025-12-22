@@ -7,15 +7,15 @@ entity interface is
     Port(
         clk      : in STD_LOGIC;
         rst      : in STD_LOGIC;
-        init_done : out STD_LOGIC;
+        init_done_i : out STD_LOGIC;
         sda      : inout STD_LOGIC;
-        scl      : inout STD_LOGIC;
+        scl      : inout STD_LOGIC
     );
 end interface;
 
 architecture rtl of interface is
     signal ena        : std_logic := '0';
-    signal addr       : std_logic_vector(7 downto 0) := "1010111"; -- 0x57
+    signal addr       : std_logic_vector(6 downto 0) := "1010111"; -- 0x57
     signal buffer_in  : std_logic_vector(23 downto 0) := (others => '0');
     signal rw         : std_logic;
     signal data_wr    : std_logic_vector(7 downto 0) := (others => '0');
@@ -360,4 +360,5 @@ architecture rtl of interface is
                 end if;
             end if;
         end process sample;
+    init_done_i <= init_done;
 end rtl;

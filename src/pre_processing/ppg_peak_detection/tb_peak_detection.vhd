@@ -55,7 +55,7 @@ begin
 
     -- Stimulus process
     stim_proc: process
-        file infile  : text open read_mode is "ppg.txt";
+        file infile  : text open read_mode is "ppg_only.txt";
         file outfile : text open write_mode is "filter_output.txt";
         variable L       : line;
         variable out_line: line;
