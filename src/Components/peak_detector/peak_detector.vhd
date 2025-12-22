@@ -1,3 +1,27 @@
+-------------------------------------------------------------------------------
+-- Research Group : EML Labs,CSE, University of Moratuwa
+-- Authors        : Weijith Wimalasiri, Yasantha Niroshan,Chathuranga Hettiarachchi
+-- 
+-- Create Date    : 23-12-2025
+-- Design Name    : Peak Detector
+-- Module Name    : peak_detector.vhd
+-- Project Name.  : PPG Peak Detection on FPGA
+-- Target Devices : Basys3 / Artix-7
+-- Tool Versions  : Vivado 2019.1
+-- Description    : This module implements a Peak Detector. It detects peaks in the input signal by comparing
+--               the current sample with its previous and next samples. A peak is identified when the current
+--               sample is greater than both its neighboring samples. The design includes a timing validation
+--               mechanism to ensure that detected peaks are spaced apart by a minimum number of samples,
+--               preventing false peak detections due to noise. The input samples are processed in Q1.15 format.
+--
+-- Dependencies    : None
+--
+-- Revision:
+-- Revision 0.01 - File Created
+-- Additional Comments:
+--   - Designed for single-channel input
+-------------------------------------------------------------------------------
+
 library IEEE;
 use IEEE.STD_LOGIC_1164.ALL;
 use IEEE.NUMERIC_STD.ALL;

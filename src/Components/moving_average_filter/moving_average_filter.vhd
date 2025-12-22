@@ -1,3 +1,27 @@
+-------------------------------------------------------------------------------
+-- Research Group : EML Labs,CSE, University of Moratuwa
+-- Authors        : Weijith Wimalasiri, Yasantha Niroshan,Chathuranga Hettiarachchi
+-- 
+-- Create Date    : 23-12-2025
+-- Design Name    : Moving Average Filter
+-- Module Name    : moving_average_filter.vhd
+-- Project Name.  : PPG Peak Detection on FPGA
+-- Target Devices : Basys3 / Artix-7
+-- Tool Versions  : Vivado 2019.1
+-- Description    : This module implements a Moving Average Filter. It processes input samples 
+--                  in Q1.15 format and produces output samples in Q1.15 format as well.The filter 
+--                  computes the average of the last '30' input samples using a running sum approach for efficiency. 
+--                  The design includes valid signal handling to indicate when the output data is valid. 
+--                  The division by 30 is implemented using fixed-point multiplication and bit-shifting to maintain precision.
+--
+-- Dependencies    : None
+--
+-- Revision:
+-- Revision 0.01 - File Created
+-- Additional Comments:
+--   - Designed for single-channel input
+-------------------------------------------------------------------------------
+
 library IEEE; 
 use IEEE.STD_LOGIC_1164.ALL;
 use IEEE.NUMERIC_STD.ALL;

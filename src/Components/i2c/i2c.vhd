@@ -1,3 +1,27 @@
+-------------------------------------------------------------------------------
+-- Research Group : EML Labs,CSE, University of Moratuwa
+-- Original Author: Lawrence Manning
+-- Authors        : Weijith Wimalasiri, Yasantha Niroshan,Chathuranga Hettiarachchi
+-- 
+-- Create Date    : 23-12-2025
+-- Design Name    : I2C Controller
+-- Module Name    : i2c.vhd
+-- Project Name.  : PPG Peak Detection on FPGA
+-- Target Devices : Basys3 / Artix-7
+-- Tool Versions  : Vivado 2019.1
+-- Description    : This module implements an I2C Controller. It supports both read and write operations 
+--                  to a slave device. The controller generates the necessary I2C signals (SCL and SDA)
+--                  based on the input commands and data. It handles start, stop, read, write, and acknowledge
+--                  sequences as per the I2C protocol.
+--
+-- Dependencies    : None
+--
+-- Revision:
+-- 		Revision 0.02 - File Modified by Weijith Wimalasiri, Yasantha Niroshan,Chathuranga Hettiarachchi
+-- 		Revision 0.01 - File Created by Lawrence Manning
+-- Additional Comments:
+--   - Designed for single-channel input
+-------------------------------------------------------------------------------
 library IEEE;
 use IEEE.STD_LOGIC_1164.ALL;
 use IEEE.NUMERIC_STD.ALL;

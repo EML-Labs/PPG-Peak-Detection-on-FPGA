@@ -1,4 +1,23 @@
--- Testbench for low_pass_iir_filter
+-------------------------------------------------------------------------------
+-- Research Group : EML Labs,CSE, University of Moratuwa
+-- Authors        : Weijith Wimalasiri, Yasantha Niroshan,Chathuranga Hettiarachchi
+-- 
+-- Create Date    : 23-12-2025
+-- Design Name    : Testbench for Type-1 Lowpass Filter
+-- Module Name    : tb_type_1_lowpass_filter.vhd
+-- Project Name.  : PPG Peak Detection on FPGA
+-- Target Devices : Basys3 / Artix-7
+-- Tool Versions  : Vivado 2019.1
+-- Description    : This testbench verifies the functionality of the Type-1 Lowpass Filter. It applies a unity impulse
+--
+-- Dependencies    : None
+--
+-- Revision:
+-- Revision 0.01 - File Created
+-- Additional Comments:
+--   - Designed for single-channel input
+-------------------------------------------------------------------------------
+
 library IEEE;
 use IEEE.STD_LOGIC_1164.ALL;
 use IEEE.NUMERIC_STD.ALL;
