@@ -1,4 +1,4 @@
-PROJ = peak_detection
+PROJ = preprocessing_pipeline
 TB = tb_$(PROJ)
 CC = ghdl
 VT = gtkwave

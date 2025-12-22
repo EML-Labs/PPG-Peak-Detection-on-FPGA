@@ -1,19 +1,14 @@
-PROJ = master
-TB = tb_$(PROJ)
-CC = ghdl
-VT = gtkwave
+GHDL_FLAGS = --std=08 --work=work
 
-VHDL_FILES = $(PROJ).vhd $(TB).vhd
+make:
+	ghdl -a $(GHDL_FLAGS) i2c.vhd tb/i2c_tb.vhd
+	ghdl -e $(GHDL_FLAGS) i2c_tb
 
-all: $(TB)
+output.vcd: make
+	ghdl -r $(GHDL_FLAGS) i2c_tb --vcd=$@
 
-$(TB): $(VHDL_FILES)
-	$(CC) -a -fsynopsys $(VHDL_FILES) 
-	$(CC) -e -fsynopsys $(TB)
+sim: output.vcd
 
-run: $(TB)
-	$(CC) -r $(TB) --vcd=$(PROJ).vcd 
-	$(VT) --dump=$(PROJ).vcd 
-
-clean:
-	rm -f *.o *.cf $(PROJ).vcd $(TB)
+gtkwave: output.vcd
+	gtkwave $<
+	
