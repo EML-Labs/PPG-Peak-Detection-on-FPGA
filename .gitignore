@@ -73,6 +73,11 @@ peak_detector.vhd
 fir_filter.vhd
 *.o
 *.cf
+*.vcd
 
+!**/*.vhd
+!**/Makefile
 
 Simulation/share/*
+
+**/build/
