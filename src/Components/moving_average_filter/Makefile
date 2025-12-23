@@ -4,6 +4,6 @@ VHDL_FILES = \
 	moving_average_filter.vhd \
 	tb_moving_average_filter.vhd
 
-STOP_TIME = 2us
+STOP_TIME = 200ns
 
 include ../../../scripts/Makefile.common

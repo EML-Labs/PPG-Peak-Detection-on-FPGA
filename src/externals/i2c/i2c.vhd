@@ -1,3 +1,7 @@
+-- SPDX-License-Identifier: CC-BY-4.0
+-- Copyright (c) 2025 EML Labs, CSE, University of Moratuwa
+-- Licensed under CC-BY 4.0: https://creativecommons.org/licenses/by/4.0/
+
 -------------------------------------------------------------------------------
 -- Research Group : EML Labs,CSE, University of Moratuwa
 -- Original Author: Lawrence Manning

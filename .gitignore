@@ -81,3 +81,10 @@ fir_filter.vhd
 simulation/share/*
 
 **/build/
+
+bin/
+lib/
+include/
+*.cfg
+share/
+

@@ -1,5 +1,5 @@
 PROJ = pipeline
-STOP_TIME = 700ns
+STOP_TIME = 10us
 
 VALIDATION_RUN := 1
 

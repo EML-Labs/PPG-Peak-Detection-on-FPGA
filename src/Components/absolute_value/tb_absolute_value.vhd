@@ -1,3 +1,7 @@
+-- SPDX-License-Identifier: CC-BY-4.0
+-- Copyright (c) 2025 EML Labs, CSE, University of Moratuwa
+-- Licensed under CC-BY 4.0: https://creativecommons.org/licenses/by/4.0/
+
 -------------------------------------------------------------------------------
 -- Research Group : EML Labs,CSE, University of Moratuwa
 -- Authors        : Weijith Wimalasiri, Yasantha Niroshan,Chathuranga Hettiarachchi
@@ -76,14 +80,14 @@ begin
         valid_in <= '1';
 
         -- Test positive value
-        x_in <= to_signed(0, 16);
+        x_in <= to_signed(7638, 16);
         wait for CLK_PERIOD;
         -- Test negative value
-        x_in <= to_signed(-1 * Q16_15, 16);
+        x_in <= to_signed(-3138, 16);
         wait for CLK_PERIOD;
         -- Test zero
         x_in <= to_signed(0, 16);
-        wait for CLK_PERIOD;
+        wait for 5*CLK_PERIOD;
         -- Test max positive
         x_in <= to_signed(1 * Q16_15, 16);
         wait for CLK_PERIOD;
@@ -91,10 +95,10 @@ begin
         x_in <= to_signed(-1 * Q16_15, 16);
         wait for CLK_PERIOD;
         -- Test random negative
-        x_in <= to_signed(-1 * Q16_15, 16);
+        x_in <= to_signed(-4568, 16);
         wait for CLK_PERIOD;
         -- Test random positive
-        x_in <= to_signed(1 * Q16_15, 16);
+        x_in <= to_signed(12038, 16);
         wait for CLK_PERIOD;
 
         wait;
