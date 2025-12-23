@@ -80,14 +80,14 @@ begin
         valid_in <= '1';
 
         -- Test positive value
-        x_in <= to_signed(0, 16);
+        x_in <= to_signed(7638, 16);
         wait for CLK_PERIOD;
         -- Test negative value
-        x_in <= to_signed(-1 * Q16_15, 16);
+        x_in <= to_signed(-3138, 16);
         wait for CLK_PERIOD;
         -- Test zero
         x_in <= to_signed(0, 16);
-        wait for CLK_PERIOD;
+        wait for 5*CLK_PERIOD;
         -- Test max positive
         x_in <= to_signed(1 * Q16_15, 16);
         wait for CLK_PERIOD;
@@ -95,10 +95,10 @@ begin
         x_in <= to_signed(-1 * Q16_15, 16);
         wait for CLK_PERIOD;
         -- Test random negative
-        x_in <= to_signed(-1 * Q16_15, 16);
+        x_in <= to_signed(-4568, 16);
         wait for CLK_PERIOD;
         -- Test random positive
-        x_in <= to_signed(1 * Q16_15, 16);
+        x_in <= to_signed(12038, 16);
         wait for CLK_PERIOD;
 
         wait;
