@@ -17,6 +17,35 @@ WAVE_DIR  ?= $(BUILD_DIR)/waves
 TB ?= tb_$(PROJ)
 TB_BINARY := $(BUILD_DIR)/$(TB)
 
+# Absolute path to this Makefile
+COMMON_MK := $(abspath $(lastword $(MAKEFILE_LIST)))
+
+# scripts/
+COMMON_DIR := $(dir $(COMMON_MK))
+
+# repo root (parent of scripts/)
+REPO_ROOT := $(abspath $(COMMON_DIR)/..)
+
+
+DATASET_NAME ?= ppg.txt
+VALIDATION_RUN ?= 0
+
+DATASET_SRC_DEFAULT := $(REPO_ROOT)/data/local/ppg.txt
+DATASET_SRC_MIMIC   := $(REPO_ROOT)/data/mimic/ppg.txt
+
+DATASET_DST := $(BUILD_DIR)/$(DATASET_NAME)
+
+# Copy dataset if validation run
+ifeq ($(VALIDATION_RUN),1)
+
+  ifneq ($(filter mimic,$(MAKECMDGOALS)),)
+    DATASET_SRC := $(DATASET_SRC_MIMIC)
+  else
+    DATASET_SRC := $(DATASET_SRC_DEFAULT)
+  endif
+
+endif
+
 # GHDL flags
 GHDL_FLAGS += --workdir=$(BUILD_DIR)
 
@@ -24,22 +53,33 @@ GHDL_FLAGS += --workdir=$(BUILD_DIR)
 all: $(TB_BINARY)
 
 # Analyze and elaborate VHDL files into a binary
-$(TB_BINARY): $(VHDL_FILES) $(VHDL_SYNTH_SOURCES)
+$(TB_BINARY): $(VHDL_SYNTH_SOURCES) $(VHDL_FILES) 
 	@mkdir -p $(BUILD_DIR)
 	@mkdir -p $(WAVE_DIR)
-
-ifneq ($(VHDL_SYNTH_SOURCES),)
-	$(GHDL) -a $(GHDL_FLAGS) $(VHDL_SYNTH_SOURCES)
-endif
-
-	
+	@if [ -n "$(VHDL_SYNTH_SOURCES)" ]; then \
+	    $(GHDL) -a $(GHDL_FLAGS) $(VHDL_SYNTH_SOURCES); \
+	fi
 	$(GHDL) -a $(GHDL_FLAGS) $(VHDL_FILES)
 	$(GHDL) -e $(GHDL_FLAGS) -o $@ $(TB)
 
+prepare_dataset:
+ifeq ($(VALIDATION_RUN),1)
+	@echo "Validation mode: copying dataset from $(DATASET_SRC)"
+	@echo "$(CURDIR): preparing dataset..."
+	@mkdir -p $(BUILD_DIR)
+	cp $(DATASET_SRC) $(DATASET_DST)
+else
+	@echo "Non-validation build: dataset not required"
+endif
+
 # Run the simulation
-run: $(TB_BINARY)
+run: prepare_dataset $(TB_BINARY)
 	@mkdir -p $(WAVE_DIR)
-	./$(TB_BINARY) --vcd=$(WAVE_DIR)/$(PROJ).vcd --stop-time=$(STOP_TIME)
+ifeq ($(VALIDATION_RUN),1)
+	cd $(BUILD_DIR) && ../$(TB_BINARY) --vcd=waves/$(PROJ).vcd --stop-time=$(STOP_TIME)
+else
+	$(TB_BINARY) --vcd=$(WAVE_DIR)/$(PROJ).vcd --stop-time=$(STOP_TIME)
+endif	
 	$(WAVE) $(WAVE_DIR)/$(PROJ).vcd
 
 # Clean build artifacts
