@@ -1,3 +1,7 @@
+-- SPDX-License-Identifier: CC-BY-4.0
+-- Copyright (c) 2025 EML Labs, CSE, University of Moratuwa
+-- Licensed under CC-BY 4.0: https://creativecommons.org/licenses/by/4.0/
+
 -------------------------------------------------------------------------------
 -- Research Group : EML Labs,CSE, University of Moratuwa
 -- Authors        : Weijith Wimalasiri, Yasantha Niroshan,Chathuranga Hettiarachchi
@@ -58,4 +62,8 @@ begin
     end process;                    
     y_out <= y_out_int;
 end Behavioral; 
+
+-- Copyright (c) 2025 EML Labs, CSE, University of Moratuwa
+-- Licensed under CC-BY 4.0: https://creativecommons.org/licenses/by/4.0/
+-- SPDX-License-Identifier: CC-BY-4.0
 

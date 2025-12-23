@@ -1,3 +1,30 @@
+-- SPDX-License-Identifier: CC-BY-4.0
+-- Copyright (c) 2025 EML Labs, CSE, University of Moratuwa
+-- Licensed under CC-BY 4.0: https://creativecommons.org/licenses/by/4.0/
+
+-------------------------------------------------------------------------------
+-- Research Group : EML Labs,CSE, University of Moratuwa
+-- Authors        : Weijith Wimalasiri, Yasantha Niroshan,Chathuranga Hettiarachchi
+-- 
+-- Create Date    : 23-12-2025
+-- Design Name    : Top Module for PPG Peak Detection
+-- Module Name    : interface.vhd
+-- Project Name.  : PPG Peak Detection on FPGA
+-- Target Devices : Basys3 / Artix-7
+-- Tool Versions  : Vivado 2019.1
+-- Description    : This is the top-level module that integrates the I2C controller to read data from the MAX30102 sensor,
+--                  processes the PPG signal, and performs peak detection. It handles initialization of the sensor
+--                  via I2C, reads FIFO data, reconstructs the PPG signal in Q1.15 format, and passes it through the processing pipeline.
+-- 
+--
+-- Dependencies    : None
+--
+-- Revision:
+-- Revision 0.01 - File Created
+-- Additional Comments:
+--   - Designed for single-channel input
+-------------------------------------------------------------------------------
+
 library ieee;
 use ieee.std_logic_1164.all;
 use ieee.numeric_std.all;
