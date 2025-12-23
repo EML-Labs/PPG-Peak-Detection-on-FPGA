@@ -78,6 +78,6 @@ fir_filter.vhd
 !**/*.vhd
 !**/Makefile
 
-Simulation/share/*
+simulation/share/*
 
 **/build/
