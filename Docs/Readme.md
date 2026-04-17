@@ -1,4 +1,4 @@
-# PPG Peak Detection on FPGA
+# Peak Detection of PPG Signals Using Fixed-Point Digital Filters Implemented in VHDL
 This project implements a low latency, hardware-accelerated peak detection system for Photoplethysmography (PPG) signals. Developed as part of the CS4363 - Hardware Description Languages module at the University of Moratuwa, the system addresses the critical need for real-time physiological monitoring with minimal latency and high energy efficiency.
 
 ## Overview
