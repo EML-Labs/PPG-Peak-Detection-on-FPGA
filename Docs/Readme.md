@@ -126,21 +126,15 @@ The I2C Master module used in this project is adapted from the work of [I2C Mast
 
 ## Citation
 If you use this work in your research, please cite the following paper:
-```
-@misc{eml2025ppg,
-title={PPG Peak Detection on FPGA},
-author={Weijith Wimalasiri and Yasantha Niroshan and Chathuranga Hettiarachchi},
-year={2025},
-note={Unpublished technical report. Available at: https://github.com/YourOrg/PPG-Peak-Detection-on-FPGA},
-url={https://github.com/EML-Labs/PPG-Peak-Detection-on-FPGA}
-}
-
-@misc{eml2025example,
-title={PPG Peak Detection Example Simulations},
-author={Weijith Wimalasiri and Yasantha Niroshan},
-year={2025},
-note={Unpublished, included with the repository examples. Available at: https://github.com/EML-Labs/PPG-Peak-Detection-on-FPGA},
-url={https://github.com/EML-Labs/PPG-Peak-Detection-on-FPGA}
+```bibtex
+@inproceedings{niroshana2025ppg,
+  title     = {Peak detection of {PPG} signals using fixed-point digital filters implemented in {VHDL}},
+  author    = {Niroshana, H. K. Y. and Wimalasiri, W. M. and Hettiarachchi, C.},
+  booktitle = {Proceedings of the Engineering Research Unit (ERU) Conference},
+  year      = {2025},
+  publisher = {Engineering Research Unit, University of Moratuwa},
+  doi       = {10.31705/ERU.2025.38},
+  url       = {https://dl.lib.uom.lk/items/73c999d1-3082-4812-94ae-30e70bf6d68a}
 }
 ```
 
